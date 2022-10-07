@@ -1,0 +1,52 @@
+button {
+  border: 1px solid black;
+  font-size: 14px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  background-color: #28497c;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+  background-color: grey;
+
+}
+
+.status_dot {
+  display:inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 100%;
+  background-color: red;
+}
+
+.action {
+ /* background-color: lightgray; */
+ padding: 5px
+}
+
+.spacer {
+  background-color: black;
+  height: 1px;
+}
+
+
+body {
+  font-family: Lato,sans-serif;
+  user-select: none; 
+  /*height: 200px;*/
+  width: 200px;
+  margin: 0;
+  font-size: 14px;
+}
+
+
+.header {
+  text-align: center;
+  font-weight: bold;
+  background-color: #28497c;
+  color: white;
+  padding: 10px;
+}
