@@ -4,35 +4,33 @@
 <head>
   <link rel="stylesheet" href="popup.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,300,0,0" />
 </head>
 
 <body>
   <header id="header">
     <div class="header">
-      <img src="images/LUH_tools_icon_16.png" alt="">
-    
-      <h1>LUH-Tools</h1>
-      <div id="global-status-dot"></div>
       <span class="material-symbols-outlined info-symbol" id="icon_info">
         info
       </span>
+      <img src="images/LUH_tools_icon_16.png" alt="">
+      <h1>LUH-Tools</h1>
+      <div id="global-status-dot"></div>
     </div>
     <div id="global-status-text">doesn't work on this site</div>
   </header>
   <div class="popdown">
     <div class="popdown-body">
-      - The QIS-Calculator switch automatically calculates and displays your lp and grade on the <a class="text-white" href="https://qis.verwaltung.uni-hannover.de/" target="_blank">QIS-site</a>
+      <strong>The QIS-Calculator switch</strong>  automatically calculates and displays your lp and grade on the <a class="text-white" href="https://qis.verwaltung.uni-hannover.de/" target="_blank">QIS-site</a>
       <br><br>
-      - The Stud.IP download switch automatically adds the download button to the right side of <a class="text-white" href="https://studip.uni-hannover.de/" target="_blank">LUH Stud.IP videos</a>
+      <strong>The Stud.IP download switch</strong> switch automatically adds the download button to the right side of <a class="text-white" href="https://studip.uni-hannover.de/" target="_blank">LUH Stud.IP videos</a>
     </div>
   </div>
   
   <main>
     <div class="action-wrapper">
-      <span>QIS Grade Calculator</span>
+      <span><strong>QIS Grade Calculator</strong></span>
 
-      <div class="area-button">
+      <div class="action-input">
         <label class="switch">
           <input type="checkbox" id="qis-auto">
           <span class="slider round" id="slider-qis"></span>
@@ -41,10 +39,10 @@
     </div>
 
     <div class="spacer"></div>
-    
+
     <div class="action-wrapper">
-      <span>Stud.IP Download Button</span>
-      <div class="area-button">
+      <span><strong>Stud.IP Download Button</strong></span>
+      <div class="action-input">
         <label class="switch">
           <input type="checkbox" id="studip-auto">
           <span class="slider round" id="slider-studip"></span>
@@ -56,7 +54,7 @@
     
     <div class="footer">
       <div>
-        <a class="text-black" href="https://bit.ly/3OKWrus" target="_blank">Claas</a> klar programmiert
+        <a href="https://bit.ly/3OKWrus" target="_blank">Claas</a> klar programmiert
       </div>
       <span>
         Version 10.10.2022

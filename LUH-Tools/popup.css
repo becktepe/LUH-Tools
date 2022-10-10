@@ -2,13 +2,12 @@
 
 :root {
   --primary: rgb(59, 110, 185);
-  --primary-60: rgb(59, 110, 185, 0.6);
+  --primary-60: rgb(59, 110, 185, 0.7);
   --disabled: #cb0914;
   --green: rgb(43, 231, 43);
   --green-pulse-40: rgba(43, 231, 43, 0.4);
   --green-pulse-0: rgba(43, 231, 43, 0);
 }
-
 
 body {
   font-family: 'Montserrat', sans-serif;
@@ -25,16 +24,6 @@ h1 {
   font-size: 18px;
   font-weight: 400;
 }
-
-.text-black {
-  color: black;
-}
-
-.text-white {
-  color: white;
-}
-
-
 
 header {
   display: flex;
@@ -63,20 +52,21 @@ header {
 #global-status-text {
   color: white;
   opacity: 50%;
-  padding-top: 5px;
-  grid-column: span 3;
 }
 
-
 #global-status-dot {
-
   width: 20px;
   height: 20px;
   border-radius: 50%;
   background-color: #cb0914;
   box-shadow: 0px 1px 8px rgba(255, 255, 255, 0.15);
-  
 }
+
+.status-dot-active {
+  background-color: var(--green) !important;
+  animation: pulse 2s infinite;
+}
+
 .info-symbol {
   z-index: 50;
   position: fixed;
@@ -85,6 +75,7 @@ header {
   top: 5px;
   left: 5px;
 }
+
 .info-symbol:hover {
   opacity: 100%;
 }
@@ -93,26 +84,26 @@ header {
   max-height: 0;
   transition: max-height 0.4s ease-out;
   overflow: hidden;
-  background-color: hsl(216, 51%, 40%);
-  color: white;
+  background-color: var(--primary-60);
 }
 
-
 .popdown-body {
-
+  color: black;
   padding: 10px;
+}
+.popdown-body a {
+  color: white;
 }
 
 .active {
   max-height: 250px;
-
   transition: max-height 0.25s ease-in;
 }
 
 .close-symbol {
-  position: absolute;
+  color: white;
   top: 5px;
-  right: 5px;
+  right: 10px;
   cursor: pointer;
   opacity: 50%;
 }
@@ -121,50 +112,26 @@ header {
   opacity: 100%;
 }
 
-.status-dot-active {
-  
-  background-color: var(--green) !important;
-  animation: pulse 2s infinite;
-}
-
-button {
-  border: 1px solid black;
-  font-size: 14px;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  background-color: #476ca5;
-  cursor: pointer;
-}
-
-button:disabled {
-  cursor: default;
-  background-color: grey;
-}
-
-
-.area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.area-status {
+.action-wrapper {
+  /* background-color: lightgray; */
+  padding: 0.5rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding-bottom: 5px;
-  font-weight: 700;
 }
 
-.area-button {
+.action-input {
   display: flex;
   padding-left: 5px;
   align-items: center;
 }
 
-.area-infotext {
-  padding-left: 5px;
+.spacer {
+  background-color: black;
+  opacity: 30%;
+  height: 1px;
+  margin: 0px 0.5rem;
 }
 
 .footer {
@@ -181,23 +148,9 @@ button:disabled {
   text-decoration: none;
 }
 
-.action-wrapper {
-  /* background-color: lightgray; */
-  padding: 0.5rem;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-  display: flex;
-  justify-content: space-between;
-}
-
-.spacer {
-  background-color: black;
-  opacity: 30%;
-  height: 1px;
-  margin: 0px 0.5rem;
-}
-
-/*  */
+/* ########## */
+/* Slider CSS */
+/* ########## */
 .switch {
   position: relative;
   display: inline-block;
@@ -265,6 +218,7 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+
 @-webkit-keyframes pulse {
   0% {
     -webkit-box-shadow: 0 0 0 0 var(--green-pulse-40);
