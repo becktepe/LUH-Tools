@@ -1,21 +1,43 @@
-// Read if this insert should be done immediately 
-chrome.storage.sync.get(['qis_auto'], function (items) {
-    if (items['qis_auto']) {
-        mainQISCalculator();
+window.onload = function() {
+    // Read if this insert should be done immediately 
+    chrome.storage.sync.get(['qis_auto'], function (items) {
+        if (items['qis_auto']) {
+            mainQISCalculator();
+        }
+    });
+    chrome.runtime.onMessage.addListener(message_handler);
+    /* chrome.runtime.onMessage.addListener(
+        function (request, sender, sendResponse) {
+            if (request.function === "mainQISCalculator") {
+                mainQISCalculator();
+            }
+            else if (request.function === "script_already_executed") {
+                sendResponse({'return': script_already_executed()});
+            }  
+        }
+    ); */
+}
+
+function message_handler(request, sender, sendResponse){
+    switch(request.function) {
+        case "mainQISCalculator":
+            mainQISCalculator();
+            break;
+        case "script_already_executed":
+            sendResponse({'return': script_already_executed()});
+            break;
+        case "alive":
+            sendResponse({'return': true});
+            break;
+    }
+}
+
+chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
+    if (msg.text === 'are_you_there_content_script?') {
+      sendResponse({status: "yes"});
     }
 });
 
-
-chrome.runtime.onMessage.addListener(
-    function (request, sender, sendResponse) {
-        if (request.function === "mainQISCalculator") {
-            mainQISCalculator();
-        }
-        else if (request.function === "script_already_executed") {
-            sendResponse({'return': script_already_executed()});
-        }  
-    }
-);
 
 function script_already_executed() {
     //grade already inserted
@@ -37,11 +59,6 @@ function insertSummary(id, header_txt, body_txt) {
     body.innerText = body_txt;
 }
 
-
-function get_side_lang() {
-    console.log(document.documentElement.lang)
-}
-
 function mainQISCalculator() {
     if (script_already_executed()) return;
 
@@ -57,10 +74,19 @@ function mainQISCalculator() {
 
     for (var i = 0, row; row = table.rows[i]; i++) {
         let cells = row.cells;
-        if (row.childElementCount == 0) continue; // skips all spacer rows
+        if (row.childElementCount != 11) continue; // skips all spacer rows
         if (cells[0].classList.contains("tabelleheader")) continue; // skips header rows
+        if (!cells[0].classList.contains("qis_konto")) continue; //skips irrelevant rows
 
+        //skip all summary rows like
+        //Grade of all "Compulsory Modules"
         let name = cells[1].innerText;
+        if(document.documentElement.lang == "de") {
+            if (name.toLowerCase().includes("module")) continue;
+        } else {
+            if (name.toLowerCase().includes("modules")) continue;
+        }
+        
         let grade = parseFloat(cells[4].innerText.replace(/,/, "."))
         let status = cells[5].innerText;
         let lp = parseInt(cells[6].innerText, 10);
@@ -78,11 +104,11 @@ function mainQISCalculator() {
             grade_count++;
         }
         //console.log(`${name} ${status}, ${lp} ${grade}`)
-        //console.log(`${name}, ${lp}, ${grade}`);
+        console.log(`${name}, ${lp}, ${grade}`);
     }
     
-    console.log(lp_count);
-    console.log(lp_weighted);
+    //console.log(lp_count);
+    //console.log(lp_weighted);
     //console.log(grade_weighted);
     //console.log(grade_weighted/lp_weighted);
     let rounded_grade = (grade_weighted / lp_weighted).toFixed(3);
@@ -90,15 +116,12 @@ function mainQISCalculator() {
     if(document.documentElement.lang == "de") {
         insertSummary("luh-tool-lp", "Leistungspunkte gesamt", lp_count);
         insertSummary("luh-tool-weighted", "Leistungspunkte gewichtet", lp_weighted);
-        insertSummary("luh-tool-grade", "Bachelornote (bis jetzt)", rounded_grade);
-        insertSummary("luh-tool-average-grade", "Durchschnittliche Note", rounded_average_grade);
+        insertSummary("luh-tool-grade", "Gewichteter Notendurchschnitt (bis jetzt)", rounded_grade.replace(".", ","));
+        insertSummary("luh-tool-average-grade", "Notendurchschnitt", rounded_average_grade.replace(".", ","));
     } else {
         insertSummary("luh-tool-lp", "Total credit points ", lp_count);
         insertSummary("luh-tool-weighted", "Weighted credit point", lp_weighted);
-        insertSummary("luh-tool-grade", "Bachelor grade (so far)", rounded_grade);
+        insertSummary("luh-tool-grade", "Weighted average grade", rounded_grade);
         insertSummary("luh-tool-average-grade", "Average grade", rounded_average_grade);
-
     }
-    
-
 }

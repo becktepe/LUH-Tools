@@ -1,22 +1,39 @@
-// Read if this insert should be done immediately 
-chrome.storage.sync.get(['studip_auto'], function (items) {
-    if (items['studip_auto']) {
-        insertDownloadButton()
-    }
-});
-
-chrome.runtime.onMessage.addListener(
-    function (request, sender, sendResponse) {
-        if (request.function === "insertDownloadButton") {
-            insertDownloadButton();
+window.onload = function() {
+    // Read if this insert should be done immediately 
+    chrome.storage.sync.get(['studip_auto'], function (items) {
+        if (items['studip_auto']) {
+            insertDownloadButton()
         }
-        else if (request.function === "download_btn_present") {
-            sendResponse({'return': download_btn_present()});
-        }  
-    }
-);
+    });
+    chrome.runtime.onMessage.addListener(message_handler);
+    /* chrome.runtime.onMessage.addListener(
+        function (request, sender, sendResponse) {
+            if (request.function === "insertDownloadButton") {
+                insertDownloadButton();
+            }
+            else if (request.function === "download_btn_present") {
+                sendResponse({'return': download_btn_present()});
+            }  
+        }
+    ); */
+}
 
-function download_btn_present(){
+function message_handler(request, sender, sendResponse){
+    switch(request.function) {
+        case "insertDownloadButton":
+            insertDownloadButton();
+            break;
+        case "script_already_executed":
+            sendResponse({'return': script_already_executed()});
+            break;
+        case "alive":
+            sendResponse({'return': true});
+            break;
+    }
+}
+
+function script_already_executed(){
+    // check if download_btn is present
     //dom selection
     let sidebar_actions = document.getElementById("sidebar-actions")
 
