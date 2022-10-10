@@ -91,6 +91,7 @@ header {
   color: black;
   padding: 10px;
 }
+
 .popdown-body a {
   color: white;
 }
@@ -146,6 +147,12 @@ header {
 .footer a{
   cursor: default;
   text-decoration: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+a:link, a:visited,  a:hover, a:active {
+  color: black;
 }
 
 /* ########## */
