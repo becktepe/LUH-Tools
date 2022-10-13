@@ -17,7 +17,11 @@ var tab = null;
 
 
 window.addEventListener("load", async function init() {
+  //insert manifest version
+  var manifestData = chrome.runtime.getManifest();
+  document.getElementById("version").innerText = manifestData.version
   
+
   //load checkbox status
   chrome.storage.sync.get(['qis_auto', 'studip_auto'], function (items) {
     if(Object.keys(items).length === 0) {
