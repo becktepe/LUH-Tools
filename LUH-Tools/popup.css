@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&display=swap');
 
 :root {
-  --primary: rgb(59, 110, 185);
-  --primary-60: rgb(59, 110, 185, 0.7);
+  --primary: rgb(19, 64, 148);
+  --primary-60: rgb(19, 64, 148, 0.6);
   --disabled: #cb0914;
   --green: rgb(43, 231, 43);
   --green-pulse-40: rgba(43, 231, 43, 0.4);
@@ -31,18 +31,29 @@ header {
   justify-items: center;
   align-items: center;
   font-weight: bold;
-  background-color: #28497c;
+  background-color: var(--primary);
   color: white;
   padding: 10px;
 }
 
 .fade {
-  animation: fade 3s ease infinite ;
+  animation: fade 3s linear infinite ;
+}
+
+@keyframes fade {
+  12.5% { background-color: #FF0000; }
+  25% { background-color: #FFA500; }
+  37.5% { background-color: #FFFF00; }
+  50% { background-color: #7FFF00; }
+  62.5% { background-color: #00FFFF; }
+  75% { background-color: #0000FF; }
+  87.5% { background-color: #9932CC; }
+  100% { background-color: #FF1493; }
 }
 
 .header {
   display: flex;
-  gap: 0.5rem;
+  gap: 1rem;
   width: 100%;
   flex-direction: row;
   align-items: center;
@@ -59,10 +70,10 @@ header {
   height: 20px;
   border-radius: 50%;
   background-color: #cb0914;
-  box-shadow: 0px 1px 8px rgba(255, 255, 255, 0.15);
 }
 
 .status-dot-active {
+  box-shadow: 0px 1px 8px rgba(255, 255, 255, 0.15);
   background-color: var(--green) !important;
   animation: pulse 2s infinite;
 }
@@ -84,12 +95,19 @@ header {
   max-height: 0;
   transition: max-height 0.4s ease-out;
   overflow: hidden;
-  background-color: var(--primary-60);
+  background-color: lightgray;
 }
 
 .popdown-body {
   color: black;
   padding: 10px;
+}
+
+.popdown-body .spacer {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .popdown-body a {
@@ -151,6 +169,10 @@ header {
   -webkit-user-drag: none;
 }
 
+.footer div {
+  opacity: 60%;
+}
+
 a:link, a:visited,  a:hover, a:active {
   color: black;
 }
@@ -196,17 +218,17 @@ a:link, a:visited,  a:hover, a:active {
   content: "";
   height: 20px;
   width: 20px;
-  left: -4px;
-  bottom: -3px;
+  left: -3px;
+  bottom: -3.5px;
   background-color: gray;
   transition: inherit;
 }
 
 input:checked + .slider {
-  background-color: var(--primary);
+  background-color: var(--primary-60);
 }
 input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
+  box-shadow: 0 0 1px var(--primary-60);
 }
 
 
@@ -214,7 +236,7 @@ input:checked + .slider:before {
   -webkit-transform: translateX(20px);
   -ms-transform: translateX(20px);
   transform: translateX(20px);
-  background-color: #28497c;
+  background-color: var(--primary);
 }
 
 /* Rounded sliders */
@@ -250,16 +272,5 @@ input:checked + .slider:before {
       -moz-box-shadow: 0 0 0 0 var(--green-pulse-0);
       box-shadow: 0 0 0 0 var(--green-pulse-0);
   }
-}
-
-@keyframes fade {
-  12.5% { background-color: #FF0000; }
-  25% { background-color: #FFA500; }
-  37.5% { background-color: #FFFF00; }
-  50% { background-color: #7FFF00; }
-  62.5% { background-color: #00FFFF; }
-  75% { background-color: #0000FF; }
-  87.5% { background-color: #9932CC; }
-  100% { background-color: #FF1493; }
 }
 

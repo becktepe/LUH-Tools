@@ -13,19 +13,22 @@ const regex_studip = /^https?:\/\/studip\.uni-hannover\.de\/plugins\.php\/flowca
 //this is set on load to the last focused window
 var tab = null;
 
+
+
+
 window.addEventListener("load", async function init() {
   
   //load checkbox status
   chrome.storage.sync.get(['qis_auto', 'studip_auto'], function (items) {
-    if (items != null) {
-      checkbox_qis_auto.checked = items['qis_auto'];
-      checkbox_studip_auto.checked = items['studip_auto'];
-    } else {
+    if(Object.keys(items).length === 0) {
       checkbox_qis_auto.checked = true;
       checkbox_studip_auto.checked = true;
       chrome.storage.sync.set({ 'studip_auto': true, 'qis_auto': true }, function () {
         console.log('Initialized settings');
       });
+    } else {
+      checkbox_qis_auto.checked = items['qis_auto'];
+      checkbox_studip_auto.checked = items['studip_auto'];
     }
 
     let slider_qis = document.querySelector("#slider-qis");

@@ -1,6 +1,6 @@
 {
   "name": "LUH-Tools",
-  "description": "Tools for QIS and Studip",
+  "description": "Tools for QIS and Studip for the LUH. This only works on '*.uni-hannover.de.'",
   "version": "1.0",
   "manifest_version": 3,
   "permissions": ["storage", "activeTab", "scripting"],

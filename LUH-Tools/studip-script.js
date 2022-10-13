@@ -6,29 +6,11 @@ window.onload = function() {
         }
     });
     chrome.runtime.onMessage.addListener(message_handler);
-    /* chrome.runtime.onMessage.addListener(
-        function (request, sender, sendResponse) {
-            if (request.function === "insertDownloadButton") {
-                insertDownloadButton();
-            }
-            else if (request.function === "download_btn_present") {
-                sendResponse({'return': download_btn_present()});
-            }  
-        }
-    ); */
 }
 
 function message_handler(request, sender, sendResponse){
-    switch(request.function) {
-        case "insertDownloadButton":
-            insertDownloadButton();
-            break;
-        case "script_already_executed":
-            sendResponse({'return': script_already_executed()});
-            break;
-        case "alive":
-            sendResponse({'return': true});
-            break;
+    if(request.function === "insertDownloadButton") {
+        insertDownloadButton();
     }
 }
 
@@ -77,5 +59,4 @@ function insertDownloadButton() {
         let list_element = createDownloadLinkElement(`Download: ${parseInt(quality, 10)}p`, new_url)
         sidebar_actions_list.appendChild(list_element)
     }
-
 }

@@ -6,38 +6,13 @@ window.onload = function() {
         }
     });
     chrome.runtime.onMessage.addListener(message_handler);
-    /* chrome.runtime.onMessage.addListener(
-        function (request, sender, sendResponse) {
-            if (request.function === "mainQISCalculator") {
-                mainQISCalculator();
-            }
-            else if (request.function === "script_already_executed") {
-                sendResponse({'return': script_already_executed()});
-            }  
-        }
-    ); */
 }
 
 function message_handler(request, sender, sendResponse){
-    switch(request.function) {
-        case "mainQISCalculator":
-            mainQISCalculator();
-            break;
-        case "script_already_executed":
-            sendResponse({'return': script_already_executed()});
-            break;
-        case "alive":
-            sendResponse({'return': true});
-            break;
+    if(request.function === "mainQISCalculator") {
+        mainQISCalculator();
     }
 }
-
-chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-    if (msg.text === 'are_you_there_content_script?') {
-      sendResponse({status: "yes"});
-    }
-});
-
 
 function script_already_executed() {
     //grade already inserted
