@@ -7,6 +7,7 @@
   --green: rgb(43, 231, 43);
   --green-pulse-40: rgba(43, 231, 43, 0.4);
   --green-pulse-0: rgba(43, 231, 43, 0);
+  --popdown-background: rgb(230, 230, 230);
 }
 
 body {
@@ -95,7 +96,7 @@ header {
   max-height: 0;
   transition: max-height 0.4s ease-out;
   overflow: hidden;
-  background-color: lightgray;
+  background-color: var(--popdown-background);
 }
 
 .popdown-body {
@@ -132,7 +133,7 @@ header {
 }
 
 .action-wrapper {
-  /* background-color: lightgray; */
+  font-size: 15px;
   padding: 0.5rem;
   padding-top: 1rem;
   padding-bottom: 1rem;
