@@ -1,7 +1,7 @@
 window.onload = function() {
     // Read if this insert should be done immediately 
-    chrome.storage.sync.get(['qis_auto'], function (items) {
-        if (items['qis_auto']) {
+    chrome.storage.sync.get(['qis_grade_insert'], function (items) {
+        if (items['qis_grade_insert']) {
             mainQISCalculator();
         }
     });
@@ -95,7 +95,7 @@ function mainQISCalculator() {
         insertSummary("luh-tool-average-grade", "Notendurchschnitt", rounded_average_grade.replace(".", ","));
     } else {
         insertSummary("luh-tool-lp", "Total credit points ", lp_count);
-        insertSummary("luh-tool-weighted", "Weighted credit point", lp_weighted);
+        insertSummary("luh-tool-weighted", "Weighted credit points", lp_weighted);
         insertSummary("luh-tool-grade", "Weighted average grade", rounded_grade);
         insertSummary("luh-tool-average-grade", "Average grade", rounded_average_grade);
     }

@@ -1,67 +1,137 @@
 let global_status_dot = document.getElementById("global-status-dot");
 let global_status_text = document.getElementById("global-status-text");
 
-let checkbox_qis_auto = document.getElementById("qis-auto");
-let checkbox_studip_auto = document.getElementById("studip-auto");
+let checkbox_qis_grade_insert = document.getElementById("qis_grade_insert");
+let checkbox_studip_insert_download = document.getElementById("studip_insert_download");
+let checkbox_studip_total_video_time = document.getElementById("studip_total_video_time");
+let checkbox_studip_plain_videoplayer = document.getElementById("studip_plain_videoplayer");
 
 const regex_qis_global = /^https?:\/\/qis\.verwaltung\.uni-hannover\.de.*/;
 const regex_studip_global = /^https?:\/\/studip\.uni-hannover\.de.*/;
 
 const regex_qis = /^https?:\/\/qis\.verwaltung\.uni-hannover\.de.*notenspiegelStudent&menu_open=n.*/;
-const regex_studip = /^https?:\/\/studip\.uni-hannover\.de\/plugins\.php\/flowcastsplugin\/media\/player\/.*/;
+const regex_studip = /^https?:\/\/studip\.uni-hannover\.de\/plugins\.php\/flowcastsplugin\/media\/.*/;
 
-//this is set on load to the last focused window
+//this is global and set on load to the last focused window
 var tab = null;
-
-
-
 
 window.addEventListener("load", async function init() {
   //insert manifest version
   var manifestData = chrome.runtime.getManifest();
-  document.getElementById("version").innerText = manifestData.version
-  
+  document.getElementById("version").innerText = manifestData.version;
 
-  //load checkbox status
-  chrome.storage.sync.get(['qis_auto', 'studip_auto'], function (items) {
-    if(Object.keys(items).length === 0) {
-      checkbox_qis_auto.checked = true;
-      checkbox_studip_auto.checked = true;
-      chrome.storage.sync.set({ 'studip_auto': true, 'qis_auto': true }, function () {
-        console.log('Initialized settings');
-      });
-    } else {
-      checkbox_qis_auto.checked = items['qis_auto'];
-      checkbox_studip_auto.checked = items['studip_auto'];
+  await load_settings();
+
+  //skipping the slider animation
+  {
+    let sliders = document.getElementsByClassName("slider")
+    for (let slider of sliders) {
+      slider.classList.add('no-animation');
     }
-
-    let slider_qis = document.querySelector("#slider-qis");
-    let slider_studip = document.querySelector("#slider-studip");
-    slider_qis.classList.add('no-animation');
-    slider_studip.classList.add('no-animation');
-    //skipping the animation
-    setTimeout(()=>{
-      slider_qis.classList.remove('no-animation');
-      slider_studip.classList.remove('no-animation');
+    setTimeout(() => {
+      for (let slider of sliders) {
+        slider.classList.remove('no-animation');
+      }
     }, 50);
-  });
+  }
 
-  let tabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+  set_global_status_dot();
+
+});
+
+async function load_settings() {
+  //loads settings status and sets the sliders
+  //['qis_grade_insert', 'studip_insert_download', 'studip_plain_videoplayer', 'studip_total_video_time']
+  let settings = await chrome.storage.sync.get(null);
+
+  console.log(JSON.stringify(settings, null, 2))
+
+  //if a settings doesn't exist init it with true
+  if (!settings.hasOwnProperty("qis_grade_insert")) {
+    settings["qis_grade_insert"] = true;
+  }
+
+  if (!settings.hasOwnProperty("studip_insert_download")) {
+    settings["studip_insert_download"] = true;
+  }
+
+  if (!settings.hasOwnProperty("studip_total_video_time")) {
+    settings["studip_total_video_time"] = true;
+  }
+
+  if (!settings.hasOwnProperty("studip_plain_videoplayer")) {
+    settings["studip_plain_videoplayer"] = true;
+  }
+
+  console.log(JSON.stringify(settings, null, 2))
+  //write back settings
+  chrome.storage.sync.set(settings);
+
+  //set checkboxes
+  checkbox_qis_grade_insert.checked = settings['qis_grade_insert'];
+  checkbox_studip_insert_download.checked = settings['studip_insert_download'];
+  checkbox_studip_total_video_time.checked = settings['studip_total_video_time'];
+  checkbox_studip_plain_videoplayer.checked = settings['studip_plain_videoplayer'];
+
+  add_checkbox_event_listeners()
+
+}
+
+async function set_global_status_dot() {
+  //set global status dot based on URL
+  let tabs = await chrome.tabs.query({ active: true, currentWindow: true });
   tab = tabs[0];
   let on_qis = regex_qis_global.test(tab.url);
   let on_studip = regex_studip_global.test(tab.url);
-
   if (on_qis || on_studip) {
-    global_status_enable();
+    global_status_dot.classList.add("status-dot-active");
+    global_status_text.style.display = "none";
   }
-});
-
-function global_status_enable(){
-  global_status_dot.classList.add("status-dot-active");
-  global_status_text.style.display = "none";
 }
 
-checkbox_qis_auto.addEventListener("change", async function () {
+function add_checkbox_event_listeners() {
+  let checkboxes = document.getElementsByTagName("input");
+  for (let checkbox of checkboxes) {
+    checkbox.addEventListener("change", handle_checkbox_change)
+  }
+}
+
+async function handle_checkbox_change(event) {
+  console.log("change")
+  let id = this.id
+  let is_active = this.checked;
+  if (is_active) {
+    //call content script functions
+    let on_qis = regex_qis.test(tab.url)
+    if (on_qis) {
+      chrome.tabs.sendMessage(tab.id, { function: "mainQISCalculator" });
+    }
+
+    let on_studip = regex_studip.test(tab.url)
+    if (on_studip) {
+      //call function based on elements id
+      switch (id) {
+        case "studip_insert_download":
+          chrome.tabs.sendMessage(tab.id, { function: "insertDownloadButton" });
+          break;
+        case "studip_total_video_time":
+          chrome.tabs.sendMessage(tab.id, { function: "insert_video_duration" });
+          break;
+        case "studip_plain_videoplayer":
+          chrome.tabs.sendMessage(tab.id, { function: "plain_video_player" });
+          break;
+      }
+    }
+  }
+  let setting = {}
+  setting[id] = is_active
+  //set storage with the same name as the id of the element
+  await chrome.storage.sync.set(setting);
+  let settings = await chrome.storage.sync.get(null);
+  console.log(JSON.stringify(settings, null, 2))
+}
+/* 
+checkbox_qis_grade_insert.addEventListener("change", async function () {
   let active = this.checked;
   if (this.checked) {
     let on_qis = regex_qis.test(tab.url)
@@ -72,7 +142,7 @@ checkbox_qis_auto.addEventListener("change", async function () {
   chrome.storage.sync.set({ 'qis_auto': active });
 })
 
-checkbox_studip_auto.addEventListener("change", async function () {
+checkbox_studip_insert_download.addEventListener("change", async function () {
   let active = this.checked;
   if (active) {
     let on_studip = regex_studip.test(tab.url)
@@ -81,7 +151,7 @@ checkbox_studip_auto.addEventListener("change", async function () {
     }
   }
   chrome.storage.sync.set({ 'studip_auto': active });
-})
+}) */
 
 
 //info popdown
@@ -95,15 +165,17 @@ icon_info.addEventListener("click", () => {
 
 global_status_dot.addEventListener("click", async (event) => {
   if (event.detail === 4) {
-    
+
     document.getElementById('header').classList.add('fade');
     global_status_text.innerText = "doesn't work on any site"
-    chrome.scripting.executeScript({target: {tabId: tab.id}, func: roll})
+    chrome.scripting.executeScript({ target: { tabId: tab.id }, func: roll })
   }
 });
 
 function roll() {
-  const url_image = "https://imgl.krone.at/scaled/2347804/v0780ce/full.jpg"
+
+  //const url_image = "https://imgl.krone.at/scaled/2347804/v0780ce/full.jpg"
+  const url_image = "https://media.tenor.com/yheo1GGu3FwAAAAM/rick-roll-rick-ashley.gif"
   const url_video = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
   console.log("roll");
 
@@ -115,23 +187,24 @@ function roll() {
     }
     return color;
   }
-  
+
   color_roll()
   rolling()
-  setInterval((rolling),2000);
-  setInterval((color_roll),3000);
+  setInterval((rolling), 2000);
+  setInterval((color_roll), 3000);
 
-  async function rolling(){
+  async function rolling() {
     let images = document.getElementsByTagName("img");
-    for(let image of images) {
+    for (let image of images) {
       image.src = url_image;
     }
   }
 
   async function color_roll() {
     let elements = document.getElementsByTagName("*")
-    for(let ele of elements) {
+    for (let ele of elements) {
       ele.style.color = getRandomColor()
+      //ele.style.backgroundColor = getRandomColor()
     }
   }
 }

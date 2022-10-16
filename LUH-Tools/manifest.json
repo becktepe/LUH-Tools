@@ -10,7 +10,7 @@
       "js": ["qis-script.js"]
     },
     {
-      "matches": ["https://studip.uni-hannover.de/plugins.php/flowcastsplugin/media/player/*"],
+      "matches": ["https://studip.uni-hannover.de/plugins.php/flowcastsplugin/media/*"],
       "js": ["studip-script.js"]
     }
   ],
