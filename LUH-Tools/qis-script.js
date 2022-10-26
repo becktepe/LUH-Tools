@@ -51,7 +51,7 @@ function mainQISCalculator() {
         let cells = row.cells;
         if (row.childElementCount != 11) continue; // skips all spacer rows
         if (cells[0].classList.contains("tabelleheader")) continue; // skips header rows
-        if (!cells[0].classList.contains("qis_konto")) continue; //skips irrelevant rows
+        if (!(cells[0].classList.contains("qis_konto") || cells[0].classList.contains("mod_n"))) continue; //skips irrelevant rows
 
         //skip all summary rows like
         //Grade of all "Compulsory Modules"

@@ -15,7 +15,7 @@ const regex_studip = /^https?:\/\/studip\.uni-hannover\.de\/plugins\.php\/flowca
 //this is global and set on load to the last focused window
 var tab = null;
 
-window.addEventListener("load", async function init() {
+window.addEventListener("DOMContentLoaded", async function init() {
   //insert manifest version
   var manifestData = chrome.runtime.getManifest();
   document.getElementById("version").innerText = manifestData.version;
@@ -97,7 +97,7 @@ function add_checkbox_event_listeners() {
 }
 
 async function handle_checkbox_change(event) {
-  console.log("change")
+  //console.log("change")
   let id = this.id
   let is_active = this.checked;
   if (is_active) {
@@ -128,7 +128,7 @@ async function handle_checkbox_change(event) {
   //set storage with the same name as the id of the element
   await chrome.storage.sync.set(setting);
   let settings = await chrome.storage.sync.get(null);
-  console.log(JSON.stringify(settings, null, 2))
+  //console.log(JSON.stringify(settings, null, 2))
 }
 /* 
 checkbox_qis_grade_insert.addEventListener("change", async function () {

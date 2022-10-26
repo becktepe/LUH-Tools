@@ -1,6 +1,6 @@
+//event listener doesnt work somehow
 window.onload = async function () {
-    console.log("Stud.IP-Script Inserted")
-
+    //console.log("Stud.IP-Script Inserted")
     let settings = await chrome.storage.sync.get(null);
 
     if (videoplayer_present()) {
@@ -12,11 +12,17 @@ window.onload = async function () {
         if (settings.hasOwnProperty('studip_plain_videoplayer') && settings['studip_plain_videoplayer']) {
             strip_flowcast()
         }
-        
+        let token = grab_token();
+        await chrome.storage.sync.set({'token': token});
+        //test_token()
     } else {
         //if mediaplayer is not present user is at the summary page
-        insert_collection_duration()
+        if (settings.hasOwnProperty('studip_total_video_time') && settings['studip_total_video_time']) {
+            insert_collection_duration()
+            insert_download_all_button()
+        }
     }
+
     chrome.runtime.onMessage.addListener(message_handler);
 }
 
@@ -36,7 +42,10 @@ function message_handler(request, sender, sendResponse) {
     }
 }
 
-function script_already_executed() {
+//############################
+//## Insert Download Button ##
+//############################
+function download_button_present() {
     // check if download_btn is present
     //dom selection
     let sidebar_actions = document.getElementById("sidebar-actions")
@@ -57,24 +66,15 @@ function createDownloadLinkElement(text, url) {
     return list_element
 }
 
-function strip_flowcast() {
-    console.log("stripping")
-    //grab and modify url from video element
+function get_video_url() {
+    //grab url from video element
     let video_element = document.getElementById("mediaplayer")
-    video_element.setAttribute("controls", "controls")
-    video_element.removeAttribute("disablepictureinpicture")
-
-    //remove 10sec jumpers
-    let jumpers = document.getElementsByClassName("jumper")
-    while (jumpers.length > 0) {
-        jumpers[0].remove()
-    }
-    document.getElementById("toolbar-panel").remove()
+    return video_element.src
 }
 
 function insertDownloadButton() {
-    //video player is not present -> do nothing
-    if(!videoplayer_present()) return
+    if(!videoplayer_present()) return; //video player is not present -> do nothing
+    if(download_button_present()) return; 
 
     //dom selection
     let sidebar_actions = document.getElementById("sidebar-actions")
@@ -83,7 +83,7 @@ function insertDownloadButton() {
     //stop if download buttons are already there
     if (sidebar_actions.innerText.includes("Download")) return
 
-    //grab and modify url from video element
+    //grab url from video element
     let video_element = document.getElementById("mediaplayer")
     let url = video_element.getAttribute("src")
 
@@ -101,13 +101,17 @@ function insertDownloadButton() {
     }
 }
 
-function fold_time(time_tuple) {
-    //[12, 615, 839] ->
-    time_tuple[1] += Math.floor(time_tuple[2] / 60)
-    time_tuple[2] %= 60
-    time_tuple[0] += Math.floor(time_tuple[1] / 60)
-    time_tuple[1] %= 60
-    return time_tuple
+
+//#####################################
+//## Total video collection duration ##
+//#####################################
+function fold_time(tt) {
+    //folds time tuple 
+    //[HH, MM, SS]
+    //[13, 632, 853] -> [23, 46, 13]
+    tt[1] += Math.floor(tt[2] / 60)
+    tt[0] += Math.floor(tt[1] / 60)
+    return [tt[0], tt[1] % 60, tt[2] % 60]
 }
 
 function insert_collection_duration() {
@@ -140,7 +144,7 @@ function insert_collection_duration() {
     <div class="sidebar-widget">
         <div class="sidebar-widget-header">Extra</div>
         <div class="sidebar-widget-content">
-            <ul class="widget-list widget-links" aria-label="Aktionen">
+            <ul class="widget-list widget-links" aria-label="Aktionen" id="extra-action-list">
                 <li style="background-image:url(https://studip.uni-hannover.de/assets/images/icons/blue/video2.svg);background-size:16px 16px;">
                 ${name} ${total_time[0]}:${total_time[1]}:${total_time[2]}
                 </li>
@@ -149,4 +153,99 @@ function insert_collection_duration() {
     </div>
     `
     let sidebar = document.querySelector("#layout-sidebar > section").innerHTML += sidebar_template;
+}
+
+
+//########################
+//## Plain Video Player ##
+//########################
+function strip_flowcast() {
+    console.log("stripping")
+    
+    let video_element = document.getElementById("mediaplayer")
+    let parent_node = video_element.parentNode
+
+    //create new Videoelement without event listeners
+    let new_video = document.createElement("video")
+    new_video.src = video_element.src
+    new_video.id = "mediaplayer"
+    new_video.setAttribute("controls", "controls")
+    new_video.setAttribute("controls", "controls")
+
+    parent_node.appendChild(new_video)
+
+    //remove old video element
+    video_element.remove()
+
+    //remove 10sec jumpers
+    let jumpers = document.getElementsByClassName("jumper")
+    while (jumpers.length > 0) {
+        jumpers[0].remove()
+    }
+    document.getElementById("toolbar-panel").remove()
+}
+
+
+//########################
+//## Download-all Button##
+//########################
+function insert_download_all_button() {
+    let extra_list = document.getElementById("extra-action-list")
+    let li_template =
+    `
+    <li  style="background-image:url(https://studip.uni-hannover.de/assets/images/icons/blue/download.svg);background-size:16px 16px;">
+        <a id="download-all-button" href="#">Download all Videos</a>
+    </li>
+    `
+    extra_list.innerHTML += li_template
+    document.getElementById("download-all-button").addEventListener("click", download_all_videos)
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function download_all_videos() {
+    let videos = (await grab_all_urls()).reverse()
+    for(let video of videos) {
+        console.log("download")
+        let name = video[0]
+        let url = video[1]
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        //changing the filename sadly doesn't work because the response header overwrites it
+        anchor.download = "test123"; 
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
+        await sleep(1000);
+    }
+}
+
+function grab_token() {
+    if(!videoplayer_present()) return; //video player is not present -> do nothing
+    let url = get_video_url();
+    const token_regex = /(?<=token=).*$/;
+    let token = url.match(token_regex)[0];
+    console.log(token);
+    return token;
+}
+
+function test_token(url, token) {
+    
+}
+
+async function grab_all_urls() {
+    let storage = await chrome.storage.sync.get(['token']);
+    let token = storage['token'];
+    let video_table = document.getElementsByClassName("media-table-row")
+    let urls = []
+    for(let item of video_table) {
+        let title = item.querySelector("td:nth-child(2) > div > div:nth-child(1) > a").innerText
+        let node = item.id;
+        let url = `https://flowcasts.uni-hannover.de/nodes/${node}/res0720.mp4?token=${token}`
+        urls.push([title, url])
+        //console.log([title, url])
+    }
+    return urls
 }
