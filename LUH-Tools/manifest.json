@@ -3,19 +3,27 @@
   "description": "Tools for QIS and Stud.IP for students of the LUH.",
   "version": "1.2",
   "manifest_version": 3,
-  "permissions": ["storage", "activeTab", "scripting"],
+  "permissions": ["storage", "activeTab", "scripting", "downloads"],
+  "host_permissions": [
+    "https://flowcasts.uni-hannover.de/*",
+    "https://flowcastsmedia.elearning.uni-hannover.de/*",
+    "*://*/*"
+  ],
   "content_scripts": [
     {
       "matches": ["https://qis.verwaltung.uni-hannover.de/*notenspiegelStudent&menu_open=n*"],
-      "js": ["qis-script.js"]
+      "js": ["content_scripts/qis-script.js"]
     },
     {
       "matches": ["https://studip.uni-hannover.de/plugins.php/flowcastsplugin/media/*"],
-      "js": ["studip-script.js"]
+      "js": ["content_scripts/studip-script.js"]
     }
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "popup/popup.html",
     "default_icon": {
       "16": "/images/LUH_tools_icon_16.png",
       "32": "/images/LUH_tools_icon_32.png",
