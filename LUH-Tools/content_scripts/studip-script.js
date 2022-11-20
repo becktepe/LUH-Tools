@@ -1,6 +1,6 @@
 let media_collection = null;
 
-//event listener doesnt work somehow
+//event listener doesn't work somehow
 window.onload = async function main () {
     //console.log("Stud.IP-Script Inserted")
     let settings = await chrome.storage.sync.get(null);
@@ -46,9 +46,8 @@ function videoplayer_present() {
     return document.getElementById("mediaplayer") != undefined
 }
 
-//################################
-//#### Insert Download Button ####
-//################################
+
+//#region Insert Download Button
 
 function download_button_present() {
     // check if download_btn is present
@@ -122,30 +121,11 @@ function insertDownloadButton() {
         let list_element = createDownloadLinkElement(`Download: ${source.label}`, source.src)
         sidebar_list.appendChild(list_element)
     }
-    
-    /* 
-    let video_element = document.getElementById("mediaplayer")
-    let url = video_element.getAttribute("src")
-
-    //only insert download links for given quality and below
-    //higher resolution files are not on the server
-    const quality_regex = /res\d\d\d\d\.mp4/
-    let original_quality = url.match(quality_regex)[0].slice(3, -4)
-    let quality_list = ["0480", "0720", "1080"].filter(quality => quality <= original_quality)
-
-    for (let quality of quality_list) {
-        //modify url
-        let new_url = url.replace(quality_regex, `res${quality}.mp4`)
-        let list_element = createDownloadLinkElement(`Download: ${parseInt(quality, 10)}p`, new_url)
-        
-        sidebar_actions_list.appendChild(list_element)
-    } 
-    */
 }
+//#endregion
 
-//#########################################
-//#### Total video collection duration ####
-//#########################################
+
+//#region Total video collection duration
 function fold_time(tt) {
     //folds time tuple 
     //[HH, MM, SS]
@@ -171,13 +151,8 @@ async function insert_collection_duration() {
     total_time = fold_time(total_time);
     total_time = total_time.map(number => {return number.toString().padStart(2, "0")})
 
-    // get language of site and change text corresponding
-    let name = undefined;
-    if(document.documentElement.lang == "de-DE") {
-        name = "Gesamtlaufzeit der Videos";
-    } else {
-        name = "Total video runtime";
-    }
+    
+    let name = chrome.i18n.getMessage("total_runtime")
 
     let sidebar_template =
     `
@@ -194,12 +169,10 @@ async function insert_collection_duration() {
     `;
     let sidebar = document.querySelector("#layout-sidebar > section").innerHTML += sidebar_template;
 }
+//#endregion
 
 
-//#####################################
-//######## Download-all Button ########
-//#####################################
-
+//#region Download-all Button
 /**
  * Grabs the media table parses it and if required generates the download links
  */
@@ -348,12 +321,12 @@ async function insert_download_all_button() {
     }
 
     let extra_list = document.getElementById("extra-action-list");
-   
+    let text = chrome.i18n.getMessage("download_all_720")
     //show download all button
     let li_template =
     `
     <li style="background-image:url(https://studip.uni-hannover.de/assets/images/icons/blue/download.svg);background-size:16px 16px;">
-        <a id="download-all" href="#">Download all Videos (720p)</a>
+        <a id="download-all" href="#">${text}</a>
     </li>
     `;
     extra_list.innerHTML += li_template;
@@ -479,11 +452,10 @@ async function fetch_token(media_collection) {
     }
     return token;
 }
+//#endregion
 
-//############################
-//#### Plain Video Player ####
-//############################
 
+//#region Plain Video Player
 function strip_flowcast() {
     if(!videoplayer_present()) return; //video player is not present -> do nothing
     
@@ -509,3 +481,4 @@ function strip_flowcast() {
     }
     document.getElementById("toolbar-panel").remove();
 }
+//#endregion

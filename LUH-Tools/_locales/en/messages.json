@@ -1,0 +1,27 @@
+{
+    "total_runtime": {
+        "message": "Total video runtime",
+        "description": "This is show when inserting the total video collection time"
+    },
+    "download_all_720": {
+        "message": "Download all Videos (720p)",
+        "description": "Text for the download all Button"
+    },
+    "total_credit_points": {
+        "message": "Total credit points",
+        "description": "Used to display QIS stats"
+    },
+    "total_credit_points_weighted": {
+        "message": "Weighted credit points",
+        "description": "Used to display QIS stats"
+    },
+    "weighted_grade": {
+        "message": "Weighted average grade",
+        "description": "Used to display QIS stats"
+    },
+    "average_grade": {
+        "message": "Average grade",
+        "description": "Used to display QIS stats"
+    }
+
+}

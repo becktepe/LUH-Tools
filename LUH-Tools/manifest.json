@@ -3,6 +3,7 @@
   "description": "Tools for QIS and Stud.IP for students of the LUH.",
   "version": "1.2",
   "manifest_version": 3,
+  "default_locale": "en",
   "permissions": ["storage", "activeTab", "scripting", "downloads"],
   "host_permissions": [
     "https://flowcasts.uni-hannover.de/*",
